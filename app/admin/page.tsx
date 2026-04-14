@@ -7,7 +7,6 @@ import { PieChart, Pie, Cell, Tooltip, Legend } from "recharts";
 export default function AdminPage() {
   const router = useRouter();
 
-  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   const [stats, setStats] = useState<any>({
@@ -15,43 +14,28 @@ export default function AdminPage() {
     totalUsers: 0,
     totalSales: 0,
   });
-
   const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-
-    if (!savedUser) {
-      router.push("/");
-      return;
-    }
-
-    const parsedUser = JSON.parse(savedUser);
-
-    if (parsedUser.role !== "admin") {
-      router.push("/home");
-      return;
-    }
-
-    setUser(parsedUser);
-
-    const fetchData = async () => {
+    const fetchDashboard = async () => {
       try {
         const res = await fetch("/api/admin/dashboard");
         const data = await res.json();
 
         setStats({
-          totalOrders: data.totalOrders,
-          totalUsers: data.totalUsers,
-          totalSales: data.totalSales,
+          totalOrders: data.totalOrders || 0,
+          totalUsers: data.totalUsers || 0,
+          totalSales: data.totalSales || 0,
         });
 
-        const formatted = data.statusData.map((item: any) => ({
-          name: item.order_status,
-          value: item.count,
-        }));
+        const formattedData = Array.isArray(data.statusData)
+          ? data.statusData.map((item: any) => ({
+              name: item.order_status || "unknown",
+              value: item.count || 0,
+            }))
+          : [];
 
-        setChartData(formatted);
+        setChartData(formattedData);
       } catch (error) {
         console.error(error);
       } finally {
@@ -59,61 +43,114 @@ export default function AdminPage() {
       }
     };
 
-    fetchData();
-  }, [router]);
+    fetchDashboard();
+  }, []);
 
-  const COLORS = ["#000000", "#888888", "#cccccc"];
+  const COLORS = ["#111111", "#666666", "#9ca3af", "#d1d5db"];
 
   if (loading) {
-    return (
-      <main className="min-h-screen bg-white text-black px-6 py-10">
-        <p>Loading...</p>
-      </main>
-    );
+    return <p className="text-gray-600">Loading dashboard...</p>;
   }
 
   return (
-    <main className="min-h-screen bg-white text-black px-6 md:px-10 py-10">
-      <h1 className="text-3xl font-serif mb-8">Admin Dashboard</h1>
-
-      {/* STAT CARDS */}
-      <div className="grid md:grid-cols-3 gap-6 mb-10">
-        <div className="border p-6">
-          <p className="text-sm text-gray-500">Total Orders</p>
-          <h2 className="text-2xl font-medium">{stats.totalOrders}</h2>
+    <main className="space-y-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <p className="text-sm text-gray-500 mb-2">Lily Studio Admin</p>
+          <h1 className="text-3xl md:text-4xl font-semibold">Dashboard</h1>
+          <p className="text-gray-500 mt-2">
+            Overview of purchases, customers, and sales.
+          </p>
         </div>
 
-        <div className="border p-6">
-          <p className="text-sm text-gray-500">Total Users</p>
-          <h2 className="text-2xl font-medium">{stats.totalUsers}</h2>
-        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => router.push("/admin/orders")}
+            className="bg-black text-white px-5 py-3 rounded-xl"
+          >
+            View Purchases
+          </button>
 
-        <div className="border p-6">
-          <p className="text-sm text-gray-500">Total Sales</p>
-          <h2 className="text-2xl font-medium">${stats.totalSales}</h2>
+          <button
+            onClick={() => router.push("/admin/products")}
+            className="border border-gray-300 px-5 py-3 rounded-xl bg-white"
+          >
+            Manage Products
+          </button>
         </div>
       </div>
 
-      {/* PIE CHART */}
-      <div className="border p-6">
-        <h2 className="text-xl mb-4">Order Status</h2>
+      <div className="grid md:grid-cols-3 gap-6">
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <p className="text-sm text-gray-500 mb-3">Total Purchases</p>
+          <h2 className="text-3xl font-semibold">{stats.totalOrders}</h2>
+        </div>
 
-        <PieChart width={300} height={300}>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-            dataKey="value"
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <p className="text-sm text-gray-500 mb-3">Total Customers</p>
+          <h2 className="text-3xl font-semibold">{stats.totalUsers}</h2>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <p className="text-sm text-gray-500 mb-3">Total Sales</p>
+          <h2 className="text-3xl font-semibold">${stats.totalSales}</h2>
+        </div>
+      </div>
+
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
+          <h2 className="text-xl font-medium mb-6">Order Status</h2>
+
+          <div className="flex justify-center">
+            <PieChart width={420} height={320}>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                dataKey="value"
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm space-y-4">
+          <h2 className="text-xl font-medium">Quick Actions</h2>
+
+          <button
+            onClick={() => router.push("/admin/orders")}
+            className="w-full text-left border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50"
           >
-            {chartData.map((entry, index) => (
-              <Cell key={index} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
+            Go to Purchases
+          </button>
 
-          <Tooltip />
-          <Legend />
-        </PieChart>
+          <button
+            onClick={() => router.push("/admin/customers")}
+            className="w-full text-left border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50"
+          >
+            View Customers
+          </button>
+
+          <button
+            onClick={() => router.push("/admin/products")}
+            className="w-full text-left border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50"
+          >
+            Manage Products
+          </button>
+
+          <button
+            onClick={() => router.push("/admin/payments")}
+            className="w-full text-left border border-gray-200 rounded-xl px-4 py-3 hover:bg-gray-50"
+          >
+            Check Payments
+          </button>
+        </div>
       </div>
     </main>
   );

@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "app/api/register"  ],
+, "app/api/register", "app/api/admin/products/delete"  ],
   "exclude": ["node_modules"]
 }
