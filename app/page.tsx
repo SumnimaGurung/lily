@@ -8,9 +8,12 @@ export default function AuthPage() {
 
   const [isLogin, setIsLogin] = useState(true);
 
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const [message, setMessage] = useState("");
 
@@ -18,12 +21,22 @@ export default function AuthPage() {
     e.preventDefault();
     setMessage("");
 
+    if (!isLogin && password !== confirmPassword) {
+      setMessage("Passwords do not match");
+      return;
+    }
+
     try {
       const url = isLogin ? "/api/login" : "/api/register";
 
       const body = isLogin
         ? { email, password }
-        : { name, email, password };
+        : {
+            name: firstName + " " + lastName,
+            email,
+            password,
+            phone,
+          };
 
       const res = await fetch(url, {
         method: "POST",
@@ -40,11 +53,28 @@ export default function AuthPage() {
         return;
       }
 
-      setMessage(data.message);
-
-      setTimeout(() => {
-        router.push("/home");
-      }, 1000);
+      if (isLogin) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+        window.dispatchEvent(new Event("userUpdated"));
+        setMessage("Login successful");
+      
+        setTimeout(() => {
+          if (data.user.role === "admin") {
+            router.push("/admin");
+          } else {
+            router.push("/home");
+          }
+        }, 1000);
+      } else {
+        setMessage("Registration successful. Please login.");
+        setIsLogin(true);
+        setFirstName("");
+        setLastName("");
+        setPhone("");
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+      }
     } catch (error) {
       console.error(error);
       setMessage("Server error");
@@ -52,57 +82,55 @@ export default function AuthPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100 relative">
+    <main className="min-h-screen bg-[#f5f5f5] flex items-center justify-center px-4 relative">
       <button
         onClick={() => router.push("/home")}
-        className="absolute top-6 right-6 bg-white px-4 py-2 rounded-lg shadow"
+        className="absolute top-6 right-6 bg-white px-4 py-2 shadow-sm"
       >
         Skip
       </button>
 
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 className="text-2xl font-bold text-center mb-4">Lily Studio</h1>
+      <div className="w-full max-w-md text-center">
+        <h1 className="text-3xl tracking-[0.2em] mb-3">
+          {isLogin ? "WELCOME BACK" : "CREATE ACCOUNT"}
+        </h1>
 
-        <div className="flex mb-4 border rounded-lg overflow-hidden">
-          <button
-            type="button"
-            className={`w-1/2 py-2 ${isLogin ? "bg-black text-white" : "bg-white text-black"}`}
-            onClick={() => {
-              setIsLogin(true);
-              setMessage("");
-            }}
-          >
-            Login
-          </button>
-
-          <button
-            type="button"
-            className={`w-1/2 py-2 ${!isLogin ? "bg-black text-white" : "bg-white text-black"}`}
-            onClick={() => {
-              setIsLogin(false);
-              setMessage("");
-            }}
-          >
-            Register
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={handleSubmit} className="bg-white p-8 shadow-sm space-y-4">
           {!isLogin && (
-            <input
-              type="text"
-              placeholder="Full Name"
-              className="w-full border p-2 rounded"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required={!isLogin}
-            />
+            <>
+              <input
+                type="text"
+                placeholder="First Name"
+                className="w-full border border-gray-400 p-3 text-sm focus:outline-none"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required
+              />
+
+              <input
+                type="text"
+                placeholder="Last Name"
+                className="w-full border border-gray-400 p-3 text-sm focus:outline-none"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required
+              />
+
+              <input
+                type="text"
+                placeholder="Phone Number"
+                className="w-full border border-gray-400 p-3 text-sm focus:outline-none"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                required
+              />
+            </>
           )}
 
           <input
             type="email"
-            placeholder="Email"
-            className="w-full border p-2 rounded"
+            placeholder="Enter Email address"
+            className="w-full border border-gray-400 p-3 text-sm focus:outline-none"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -110,24 +138,66 @@ export default function AuthPage() {
 
           <input
             type="password"
-            placeholder="Password"
-            className="w-full border p-2 rounded"
+            placeholder="Enter password"
+            className="w-full border border-gray-400 p-3 text-sm focus:outline-none"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
 
-          {message && (
-            <p className="text-center text-sm text-red-500">{message}</p>
+          {!isLogin && (
+            <input
+              type="password"
+              placeholder="Confirm password"
+              className="w-full border border-gray-400 p-3 text-sm focus:outline-none"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
           )}
+
+          {message && <p className="text-sm text-red-500">{message}</p>}
 
           <button
             type="submit"
-            className="w-full bg-black text-white py-2 rounded"
+            className="w-full bg-black text-white py-3 text-sm tracking-[0.2em]"
           >
-            {isLogin ? "Login" : "Register"}
+            {isLogin ? "LOGIN" : "CREATE ACCOUNT"}
           </button>
         </form>
+
+        <div className="mt-6 text-sm text-gray-700 space-y-2">
+          {isLogin ? (
+            <>
+              <p>
+                <span
+                  className="underline cursor-pointer"
+                  onClick={() => {
+                    setIsLogin(false);
+                    setMessage("");
+                  }}
+                >
+                  Register
+                </span>
+              </p>
+
+              <p className="underline cursor-pointer">Forgot your password?</p>
+            </>
+          ) : (
+            <p>
+              Already have an account?{" "}
+              <span
+                className="underline cursor-pointer"
+                onClick={() => {
+                  setIsLogin(true);
+                  setMessage("");
+                }}
+              >
+                Login
+              </span>
+            </p>
+          )}
+        </div>
       </div>
     </main>
   );

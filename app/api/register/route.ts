@@ -3,13 +3,13 @@ import bcrypt from "bcrypt";
 
 export async function POST(req: Request) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, phone } = await req.json();
 
     const hashed = await bcrypt.hash(password, 10);
 
     await db.query(
-      "INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)",
-      [name, email, hashed]
+      "INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)",
+      [name, email, hashed, phone, "customer"]
     );
 
     return Response.json({ message: "User registered successfully" });
