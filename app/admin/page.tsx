@@ -8,8 +8,7 @@ export default function AdminPage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
-
-  const [stats, setStats] = useState<any>({
+  const [stats, setStats] = useState({
     totalOrders: 0,
     totalUsers: 0,
     totalSales: 0,
