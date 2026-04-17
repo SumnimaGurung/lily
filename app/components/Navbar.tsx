@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Search, User, Heart, ShoppingBag } from "lucide-react";
 
 export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
@@ -67,16 +68,33 @@ export default function Navbar() {
           </nav>
         </div>
 
-        <div className="flex items-center gap-6 text-sm uppercase tracking-wider">
-          <Link href="/search">Search</Link>
+        <div className="flex items-center gap-5 ml-auto">
+          <div className="flex items-center rounded-full border border-gray-300 px-4 py-2">
+            <Search size={16} className="text-gray-500" />
+            <input
+              type="text"
+              placeholder="Search"
+              className="ml-2 w-28 bg-transparent text-sm outline-none placeholder:text-gray-400"
+            />
+          </div>
 
-          {user ? (
-            <Link href="/account">Account</Link>
-          ) : (
-            <Link href="/">Account</Link>
-          )}
+          <Link href="/account">
+            <User size={20} />
+          </Link>
 
-          <Link href="/cart">Cart ({cartCount})</Link>
+          <Link href="/wishlist">
+            <Heart size={20} />
+          </Link>
+
+          <Link href="/cart" className="relative">
+            <ShoppingBag size={20} />
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-3 text-xs">
+                {cartCount}
+              </span>
+            )}
+          </Link>
+
         </div>
       </div>
     </header>
