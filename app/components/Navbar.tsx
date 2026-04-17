@@ -2,11 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search, User, Heart, ShoppingBag } from "lucide-react";
 
 export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
   const [user, setUser] = useState<any>(null);
+  const [searchText, setSearchText] = useState("");
+  const router = useRouter();
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -35,18 +38,22 @@ export default function Navbar() {
 
     window.addEventListener("storage", updateCartCount);
     window.addEventListener("cartUpdated", updateCartCount);
-
     window.addEventListener("storage", updateUser);
     window.addEventListener("userUpdated", updateUser);
 
     return () => {
       window.removeEventListener("storage", updateCartCount);
       window.removeEventListener("cartUpdated", updateCartCount);
-
       window.removeEventListener("storage", updateUser);
       window.removeEventListener("userUpdated", updateUser);
     };
   }, []);
+
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && searchText.trim() !== "") {
+      router.push(`/shop?search=${encodeURIComponent(searchText.trim())}`);
+    }
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -64,16 +71,18 @@ export default function Navbar() {
             <Link href="/home">New In</Link>
             <Link href="/shop">Shop</Link>
             <Link href="/trends">Trends</Link>
-            <Link href="/sale">Sale</Link>
           </nav>
         </div>
 
         <div className="flex items-center gap-5 ml-auto">
-          <div className="flex items-center rounded-full border border-gray-300 px-4 py-2">
+          <div className="flex items-center rounded-full border border-gray-300 px-4 py-2 cursor-text transition focus-within:border-black focus-within:shadow-sm">
             <Search size={16} className="text-gray-500" />
             <input
               type="text"
               placeholder="Search"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              onKeyDown={handleSearch}
               className="ml-2 w-28 bg-transparent text-sm outline-none placeholder:text-gray-400"
             />
           </div>
@@ -94,7 +103,6 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-
         </div>
       </div>
     </header>

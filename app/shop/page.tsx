@@ -1,31 +1,41 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const products = [
   { id: 1, name: "Tailored Blazer", price: 60, category: "Blazers", image: "/blackblazer.jpg" },
   { id: 2, name: "Top", price: 35, category: "Tops", image: "/top.jpg" },
-  { id: 3, name: "Dress", price: 75, category: "Dresses", image: "/dress.jpg"  },
+  { id: 3, name: "Dress", price: 75, category: "Dresses", image: "/dress.jpg" },
   { id: 4, name: "Sweater", price: 32, category: "Shorts", image: "/sweater.jpg" },
   { id: 5, name: "White Blazer", price: 70, category: "Blazers", image: "/blazer.jpg" },
   { id: 6, name: "Jacket", price: 55, category: "Outerwear", image: "/jacket.jpg" },
-  { id: 7, name: "Trousers", price: 40, category: "Bottoms", image: "/trouser.jpg"},
-  { id: 8, name: "Wide Jeans", price: 45, category: "Bottoms", image: "/jeans.jpg"},
+  { id: 7, name: "Trousers", price: 40, category: "Bottoms", image: "/trouser.jpg" },
+  { id: 8, name: "Wide Jeans", price: 45, category: "Bottoms", image: "/jeans.jpg" },
 ];
-
-
 
 const categories = ["All", "Tops", "Bottoms", "Dresses", "Blazers", "Shorts", "Outerwear"];
 
 export default function ShopPage() {
+  const searchParams = useSearchParams();
+  const search = searchParams.get("search") || "";
+
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [viewMode, setViewMode] = useState("two");
   const [message, setMessage] = useState("");
 
-  const filteredProducts =
+  let filteredProducts =
     selectedCategory === "All"
       ? products
       : products.filter((product) => product.category === selectedCategory);
+
+  if (search.trim() !== "") {
+    filteredProducts = filteredProducts.filter((product) => {
+      return (
+        product.name.toLowerCase().includes(search.toLowerCase()) ||
+        product.category.toLowerCase().includes(search.toLowerCase())
+      );
+    });
+  }
 
   const handleAddToCart = (product: any) => {
     const existingCart = localStorage.getItem("cart");
@@ -51,7 +61,14 @@ export default function ShopPage() {
   return (
     <main className="min-h-screen bg-white text-black">
       <div className="px-6 md:px-10 py-8 border-b border-gray-200 flex flex-col gap-6 lg:flex-row lg:justify-between lg:items-center">
-        <h1 className="text-3xl font-serif">Shop</h1>
+        <div>
+          <h1 className="text-3xl font-serif">Shop</h1>
+          {search && (
+            <p className="text-sm text-gray-500 mt-2">
+              Search result for: <span className="text-black">{search}</span>
+            </p>
+          )}
+        </div>
 
         <div className="flex gap-6 text-sm uppercase flex-wrap">
           {categories.map((cat) => (
@@ -68,22 +85,6 @@ export default function ShopPage() {
             </button>
           ))}
         </div>
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => setViewMode("two")}
-            className={viewMode === "two" ? "bg-black text-white px-3 py-1" : "border px-3 py-1"}
-          >
-            1
-          </button>
-
-          <button
-            onClick={() => setViewMode("four")}
-            className={viewMode === "four" ? "bg-black text-white px-3 py-1" : "border px-3 py-1"}
-          >
-            2
-          </button>
-        </div>
       </div>
 
       {message && (
@@ -91,37 +92,31 @@ export default function ShopPage() {
       )}
 
       <div className="px-10 md:px-20 lg:px-40 py-10">
-        <div
-          className={
-            viewMode === "two"
-              ? "grid grid-cols-1 sm:grid-cols-2 gap-8"
-              : "grid grid-cols-2 lg:grid-cols-4 gap-8"
-          }
-        >
-          {filteredProducts.map((product) => (
-            <div key={product.id}>
-              <img
-                src={product.image}
-                alt={product.name}
-                className={
-                  viewMode === "two"
-                    ? "w-full h-[500px] object-cover"
-                    : "w-full h-[400px] object-cover"
-                }
-              />
+        {filteredProducts.length === 0 ? (
+          <p className="text-center text-gray-500">No products found.</p>
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+            {filteredProducts.map((product) => (
+              <div key={product.id}>
+                <img
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-[400px] object-cover"
+                />
 
-              <p className="text-sm mt-2 uppercase">{product.name}</p>
-              <p className="text-sm text-gray-600 mb-3">${product.price}</p>
+                <p className="text-sm mt-2 uppercase">{product.name}</p>
+                <p className="text-sm text-gray-600 mb-3">${product.price}</p>
 
-              <button
-                onClick={() => handleAddToCart(product)}
-                className="w-full border border-black py-2 text-sm uppercase hover:bg-black hover:text-white transition"
-              >
-                Add to Cart
-              </button>
-            </div>
-          ))}
-        </div>
+                <button
+                  onClick={() => handleAddToCart(product)}
+                  className="w-full border border-black py-2 text-sm uppercase hover:bg-black hover:text-white transition"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );
