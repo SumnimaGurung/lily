@@ -1,37 +1,40 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const products = [
   {
     id: 1,
-    name: "Classic White Shirt",
+    name: "Top",
     price: "$35",
-    image: "https://picsum.photos/500/650?random=1",
+    image: "top.jpg",
   },
   {
     id: 2,
-    name: "Beige Blazer",
+    name: "Floral Midi",
     price: "$60",
-    image: "https://picsum.photos/500/650?random=2",
+    image: "skirt1.jpg",
   },
   {
     id: 3,
     name: "Black Wide Pants",
     price: "$45",
-    image: "https://picsum.photos/500/650?random=3",
+    image: "trouser.jpg",
   },
   {
     id: 4,
     name: "Minimal Dress",
     price: "$55",
-    image: "https://picsum.photos/500/650?random=4",
+    image: "dress.jpg",
   },
 ];
 
 export default function HomePage() {
+  const router = useRouter();
+
   return (
     <main className="min-h-screen bg-white text-black">
-      
-      {/* HERO SECTION */}
       <section className="relative h-[90vh] w-full">
         <img
           src="/mini.jpg"
@@ -53,14 +56,16 @@ export default function HomePage() {
               Timeless silhouettes and modern minimalism designed for everyday elegance.
             </p>
 
-            <button className="border border-white px-8 py-3 uppercase text-sm tracking-wider hover:bg-white hover:text-black transition">
+            <button
+              onClick={() => router.push("/shop")}
+              className="border border-white px-8 py-3 uppercase text-sm tracking-wider hover:bg-white hover:text-black transition"
+            >
               Shop Collection
             </button>
           </div>
         </div>
       </section>
 
-      {/* PRODUCTS */}
       <section className="px-6 md:px-10 py-20">
         <div className="flex items-center justify-between mb-10">
           <h3 className="text-3xl md:text-4xl font-serif">Featured Pieces</h3>
@@ -94,7 +99,6 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-
     </main>
   );
 }
