@@ -7,14 +7,31 @@ const products = [
   { id: 1, name: "Tailored Blazer", price: 60, category: "Blazers", image: "/blackblazer.jpg" },
   { id: 2, name: "Top", price: 35, category: "Tops", image: "/top.jpg" },
   { id: 3, name: "Dress", price: 75, category: "Dresses", image: "/dress.jpg" },
-  { id: 4, name: "Sweater", price: 32, category: "Shorts", image: "/sweater.jpg" },
+  { id: 4, name: "Sweater", price: 32, category: "Outerwear", image: "/sweater.jpg" },
   { id: 5, name: "White Blazer", price: 70, category: "Blazers", image: "/blazer.jpg" },
   { id: 6, name: "Jacket", price: 55, category: "Outerwear", image: "/jacket.jpg" },
   { id: 7, name: "Trousers", price: 40, category: "Bottoms", image: "/trouser.jpg" },
   { id: 8, name: "Wide Jeans", price: 45, category: "Bottoms", image: "/jeans.jpg" },
+  { id: 9, name: "Straight Jeans", price: 50, category: "Bottoms", image: "/jeans2.jpg" },
+  { id: 10, name: "Midi Skirt", price: 48, category: "Bottoms", image: "/skirt1.jpg" },
+  { id: 11, name: "Polka Midi", price: 52, category: "Bottoms", image: "/skirt2.jpg" },
+  { id: 12, name: "Soft Cardigan", price: 42, category: "Outerwear", image: "/cardigan1.jpg" },
+  { id: 13, name: "Long Cardigan", price: 45, category: "Outerwear", image: "/cardigan2.jpg" },
+  { id: 14, name: "Wool Sweater", price: 38, category: "Outerwear", image: "/sweater2.jpg" },
+  { id: 15, name: "Mesh Top", price: 40, category: "Tops", image: "/top2.jpg" },
+  { id: 16, name: "silk Top", price: 36, category: "Tops", image: "/top3.jpg" },
+  { id: 17, name: "Mini Dress", price: 65, category: "Dresses", image: "/dress2.jpg" },
+  { id: 18, name: "Maxi Dress", price: 80, category: "Dresses", image: "/dress3.jpg" },
+  { id: 19, name: "Floral Dress", price: 72, category: "Dresses", image: "/dress4.jpg" },
+  { id: 20, name: "Bodycon Dress", price: 68, category: "Dresses", image: "/dress5.jpg" },
+  { id: 21, name: "Basic Tank Top", price: 25, category: "Tops", image: "/tank1.jpg" },
+  { id: 22, name: "Ribbed Tank", price: 28, category: "Tops", image: "/tank2.jpg" },
+  { id: 23, name: "Cropped Tank", price: 26, category: "Tops", image: "/tank3.jpg" },
+  { id: 24, name: "Slim Tank", price: 27, category: "Tops", image: "/tank4.jpg" },
+  { id: 25, name: "Classic Tank", price: 24, category: "Tops", image: "/tank5.jpg" },
 ];
 
-const categories = ["All", "Tops", "Bottoms", "Dresses", "Blazers", "Shorts", "Outerwear"];
+const categories = ["All", "Tops", "Bottoms", "Dresses", "Blazers", "Outerwear"];
 
 export default function ShopPage() {
   const searchParams = useSearchParams();
@@ -44,18 +61,17 @@ export default function ShopPage() {
     const existingProduct = cart.find((item: any) => item.id === product.id);
 
     if (existingProduct) {
-      existingProduct.quantity = existingProduct.quantity + 1;
+      existingProduct.quantity += 1;
     } else {
       cart.push({ ...product, quantity: 1 });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated"));
+
     setMessage(`${product.name} added to cart`);
 
-    setTimeout(() => {
-      setMessage("");
-    }, 1500);
+    setTimeout(() => setMessage(""), 1500);
   };
 
   return (
@@ -98,11 +114,15 @@ export default function ShopPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {filteredProducts.map((product) => (
               <div key={product.id}>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-[400px] object-cover"
-                />
+                
+                {/* Image with WHITE background */}
+                <div className="bg-white p-4">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-[400px] object-contain"
+                  />
+                </div>
 
                 <p className="text-sm mt-2 uppercase">{product.name}</p>
                 <p className="text-sm text-gray-600 mb-3">${product.price}</p>
