@@ -17,18 +17,18 @@ const products = [
   { id: 11, name: "Polka Midi", price: 52, category: "Bottoms", image: "/skirt2.jpg" },
   { id: 12, name: "Soft Cardigan", price: 42, category: "Outerwear", image: "/cardigan1.jpg" },
   { id: 13, name: "Long Cardigan", price: 45, category: "Outerwear", image: "/cardigan2.jpg" },
-  { id: 14, name: "Wool Sweater", price: 38, category: "Outerwear", image: "/sweater2.jpg" },
+  { id: 14, name: "Knit Sweater", price: 38, category: "Outerwear", image: "/sweater2.jpg" },
   { id: 15, name: "Mesh Top", price: 40, category: "Tops", image: "/top2.jpg" },
   { id: 16, name: "silk Top", price: 36, category: "Tops", image: "/top3.jpg" },
   { id: 17, name: "Mini Dress", price: 65, category: "Dresses", image: "/dress2.jpg" },
   { id: 18, name: "Maxi Dress", price: 80, category: "Dresses", image: "/dress3.jpg" },
   { id: 19, name: "Floral Dress", price: 72, category: "Dresses", image: "/dress4.jpg" },
   { id: 20, name: "Bodycon Dress", price: 68, category: "Dresses", image: "/dress5.jpg" },
-  { id: 21, name: "Basic Tank Top", price: 25, category: "Tops", image: "/tank1.jpg" },
+  { id: 21, name: "Shirt", price: 25, category: "Tops", image: "/shirt.jpg" },
   { id: 22, name: "Ribbed Tank", price: 28, category: "Tops", image: "/tank2.jpg" },
-  { id: 23, name: "Cropped Tank", price: 26, category: "Tops", image: "/tank3.jpg" },
-  { id: 24, name: "Slim Tank", price: 27, category: "Tops", image: "/tank4.jpg" },
-  { id: 25, name: "Classic Tank", price: 24, category: "Tops", image: "/tank5.jpg" },
+  { id: 23, name: "Ballet", price: 26, category: "Tops", image: "/ballet.jpg" },
+  { id: 24, name: "Flats", price: 27, category: "Tops", image: "/flat.jpg" },
+  { id: 25, name: "Sandal", price: 24, category: "Tops", image: "/sandal.jpg" },
 ];
 
 const categories = ["All", "Tops", "Bottoms", "Dresses", "Blazers", "Outerwear"];
