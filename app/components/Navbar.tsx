@@ -76,9 +76,9 @@ export default function Navbar() {
             </Link>
 
             <nav className="hidden md:flex gap-8 text-sm uppercase tracking-wider ml-6">
-              <Link href="/home">New In</Link>
+              <Link href="/newin">New In</Link>
               <Link href="/shop">Shop</Link>
-              <Link href="/trends">Trends</Link>
+              <Link href="/trends">Recommendation</Link>
             </nav>
           </div>
 
@@ -137,7 +137,7 @@ export default function Navbar() {
               <Link href="/home" onClick={() => setMenuOpen(false)}>
                 New In
               </Link>
-              <Link href="/trends" onClick={() => setMenuOpen(false)}>
+              <Link href="/Recommendation" onClick={() => setMenuOpen(false)}>
                 Trends
               </Link>
               <Link href="/shop?search=sale" onClick={() => setMenuOpen(false)}>

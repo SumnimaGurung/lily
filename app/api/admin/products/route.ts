@@ -9,22 +9,28 @@ export async function GET() {
     return Response.json(rows);
   } catch (error) {
     console.error(error);
-    return Response.json({ message: "Error loading products" }, { status: 500 });
+    return Response.json(
+      { message: "Error loading products" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const { name, price } = await req.json();
+    const { name, price, image, displayLabel, productStatus } = await req.json();
 
     await db.query(
-      "INSERT INTO products (name, price) VALUES (?, ?)",
-      [name, price]
+      "INSERT INTO product (name, price, image, display_label, product_status) VALUES (?, ?, ?, ?, ?)",
+      [name, price, image, displayLabel, productStatus]
     );
 
     return Response.json({ message: "Product added successfully" });
   } catch (error) {
     console.error(error);
-    return Response.json({ message: "Error adding product" }, { status: 500 });
+    return Response.json(
+      { message: "Error adding product" },
+      { status: 500 }
+    );
   }
 }
