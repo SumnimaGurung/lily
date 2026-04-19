@@ -66,10 +66,16 @@ export default function AdminPaymentsPage() {
                 <tr key={p.order_id} className="border-t">
                   <td className="p-4">#{p.order_id}</td>
                   <td className="p-4">{p.customer_name}</td>
-                  <td className="p-4">${p.total_amount}</td>
+
+                  {/* ✅ FINAL SAFE PRICE FORMAT */}
+                  <td className="p-4">
+                    Rs {Number(p.total_amount || 0).toLocaleString()}
+                  </td>
+
                   <td className="p-4">
                     {p.payment_method || "COD"}
                   </td>
+
                   <td className="p-4 capitalize">
                     {p.payment_status || "unpaid"}
                   </td>

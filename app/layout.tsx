@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,21 +48,30 @@ export default function RootLayout({
 
             <div>
               <h4 className="font-semibold mb-3 uppercase tracking-wider">Help</h4>
+
               <div className="space-y-2 text-neutral-700">
-                <p>Contact Us</p>
-                <p>Shipping</p>
-                <p>Returns</p>
+
+                <Link href="/contactus" className="block hover:text-black cursor-pointer">
+                  Contact Us
+                </Link>
+
+                <Link href="/aboutus" className="block hover:text-black cursor-pointer">
+                  About Us
+                </Link>
+
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <h4 className="font-semibold mb-3 uppercase tracking-wider">Follow</h4>
               <div className="space-y-2 text-neutral-700">
-                <p>Instagram</p>
+                <p>Email</p>
                 <p>Facebook</p>
                 <p>Pinterest</p>
               </div>
-            </div>
+            </div> */}
+
+
           </div>
         </footer>
       </body>

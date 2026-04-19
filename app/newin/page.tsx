@@ -89,7 +89,9 @@ export default function NewInPage() {
                 </div>
 
                 <p className="text-sm mt-2 uppercase">{product.name}</p>
-                <p className="text-sm text-gray-600">${product.price}</p>
+                <p className="text-sm text-gray-600">
+                  Rs {Number(product.price).toLocaleString()}
+                </p>
 
                 <button
                   onClick={() => handleAddToCart(product)}

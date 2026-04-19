@@ -11,6 +11,8 @@ export default function AdminProductsPage() {
   const [productStatus, setProductStatus] = useState("active");
   const [loading, setLoading] = useState(true);
 
+  const [editingProduct, setEditingProduct] = useState<any>(null);
+
   const fetchProducts = async () => {
     try {
       const res = await fetch("/api/admin/products");
@@ -30,15 +32,26 @@ export default function AdminProductsPage() {
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-
     if (!file) return;
 
     const reader = new FileReader();
-
     reader.onloadend = () => {
       setImage(reader.result as string);
     };
+    reader.readAsDataURL(file);
+  };
 
+  const handleEditImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !editingProduct) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setEditingProduct({
+        ...editingProduct,
+        image: reader.result as string,
+      });
+    };
     reader.readAsDataURL(file);
   };
 
@@ -85,6 +98,41 @@ export default function AdminProductsPage() {
     }
   };
 
+  const handleUpdateProduct = async () => {
+    if (!editingProduct) return;
+
+    try {
+      const res = await fetch("/api/admin/products/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          product_id: editingProduct.product_id,
+          name: editingProduct.name,
+          price: Number(editingProduct.price),
+          image: editingProduct.image,
+          displayLabel: editingProduct.display_label,
+          productStatus: editingProduct.product_status,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.message);
+        return;
+      }
+
+      alert("Product updated successfully");
+      setEditingProduct(null);
+      fetchProducts();
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong");
+    }
+  };
+
   const handleDelete = async (id: number) => {
     try {
       const res = await fetch("/api/admin/products/delete", {
@@ -102,6 +150,7 @@ export default function AdminProductsPage() {
         return;
       }
 
+      alert("Product deleted successfully");
       fetchProducts();
     } catch (error) {
       console.error(error);
@@ -116,6 +165,7 @@ export default function AdminProductsPage() {
         <h1 className="text-3xl font-semibold">Products</h1>
       </div>
 
+      {/* ADD PRODUCT */}
       <div className="bg-white border rounded-2xl p-6 space-y-4">
         <h2 className="text-xl font-medium">Add Product</h2>
 
@@ -129,7 +179,7 @@ export default function AdminProductsPage() {
 
         <input
           type="number"
-          placeholder="Price"
+          placeholder="Price (Rs)"
           className="w-full border p-3 rounded-lg"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
@@ -177,6 +227,7 @@ export default function AdminProductsPage() {
         </button>
       </div>
 
+      {/* PRODUCT LIST */}
       <div className="bg-white border rounded-2xl overflow-hidden">
         {loading ? (
           <p className="p-6">Loading...</p>
@@ -185,41 +236,47 @@ export default function AdminProductsPage() {
         ) : (
           <div className="space-y-3 p-4">
             {products.map((p) => (
-              <div
-                key={p.product_id}
-                className="flex justify-between items-center border p-4 rounded-lg gap-4"
-              >
-                <div className="flex items-center gap-4">
-                  {p.image ? (
+              <div key={p.product_id} className="border p-4 rounded-lg">
+                <div className="flex justify-between items-center gap-4">
+                  <div className="flex items-center gap-4">
                     <img
                       src={p.image}
                       alt={p.name}
                       className="w-20 h-20 object-cover rounded-lg border"
                     />
-                  ) : (
-                    <div className="w-20 h-20 border rounded-lg flex items-center justify-center text-xs text-gray-400">
-                      No image
-                    </div>
-                  )}
 
-                  <div className="space-y-1">
-                    <p className="font-medium">{p.name}</p>
-                    <p className="text-sm text-gray-500">${p.price}</p>
-                    <p className="text-sm text-gray-500 capitalize">
-                      Label: {p.display_label}
-                    </p>
-                    <p className="text-sm text-gray-500 capitalize">
-                      Status: {p.product_status}
-                    </p>
+                    <div>
+                      <p className="font-medium">{p.name}</p>
+
+                      <p className="text-sm text-gray-500">
+                        Rs {Number(p.price).toLocaleString()}
+                      </p>
+
+                      <p className="text-sm text-gray-500 capitalize">
+                        Label: {p.display_label}
+                      </p>
+                      <p className="text-sm text-gray-500 capitalize">
+                        Status: {p.product_status}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => setEditingProduct(p)}
+                      className="text-blue-600"
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(p.product_id)}
+                      className="text-red-600"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
-
-                <button
-                  onClick={() => handleDelete(p.product_id)}
-                  className="text-red-600"
-                >
-                  Delete
-                </button>
               </div>
             ))}
           </div>

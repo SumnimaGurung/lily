@@ -92,7 +92,9 @@ export default function AdminPage() {
 
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
           <p className="text-sm text-gray-500 mb-3">Total Sales</p>
-          <h2 className="text-3xl font-semibold">${stats.totalSales}</h2>
+          <h2 className="text-3xl font-semibold">
+            Rs {Number(stats.totalSales).toLocaleString()}
+          </h2>
         </div>
       </div>
 

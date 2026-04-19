@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 export default function CartPage() {
   const [cartItems, setCartItems] = useState<any[]>([]);
 
-  // Load cart from localStorage
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
     if (savedCart) {
@@ -13,14 +12,12 @@ export default function CartPage() {
     }
   }, []);
 
-  // Update cart in state + localStorage
   const updateCart = (updatedCart: any[]) => {
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
-  // Change quantity
   const handleQuantityChange = (id: number, quantity: number) => {
     const updatedCart = cartItems.map((item) => {
       if (item.id === id) {
@@ -32,13 +29,11 @@ export default function CartPage() {
     updateCart(updatedCart);
   };
 
-  // Delete item
   const removeItem = (id: number) => {
     const updatedCart = cartItems.filter((item) => item.id !== id);
     updateCart(updatedCart);
   };
 
-  // Total price
   const total = cartItems.reduce((sum, item) => {
     return sum + item.price * item.quantity;
   }, 0);
@@ -67,7 +62,11 @@ export default function CartPage() {
                 {/* DETAILS */}
                 <div className="flex-1">
                   <h2 className="text-lg">{item.name}</h2>
-                  <p className="text-gray-600">${item.price}</p>
+
+                  {/* ✅ PRICE */}
+                  <p className="text-gray-600">
+                    Rs {item.price.toLocaleString()}
+                  </p>
 
                   {/* QUANTITY */}
                   <div className="mt-3">
@@ -86,14 +85,13 @@ export default function CartPage() {
                     </select>
                   </div>
 
-                  {/* ITEM TOTAL */}
+                  {/* ✅ ITEM TOTAL */}
                   <p className="mt-3 text-sm">
-                    Item Total: ${item.price * item.quantity}
+                    Item Total: Rs {(item.price * item.quantity).toLocaleString()}
                   </p>
 
                   {/* DELETE + SAVE */}
                   <div className="flex items-center gap-3 mt-4 text-sm uppercase">
-
                     <button
                       onClick={() => removeItem(item.id)}
                       className="hover:opacity-70"
@@ -104,7 +102,6 @@ export default function CartPage() {
                     <span>|</span>
 
                     <button className="hover:opacity-70">
-                      {/* Bookmark icon */}
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -120,7 +117,6 @@ export default function CartPage() {
                         />
                       </svg>
                     </button>
-
                   </div>
                 </div>
               </div>
@@ -133,15 +129,14 @@ export default function CartPage() {
 
             <div className="flex justify-between mb-3">
               <span>Total</span>
-              <span>${total}</span>
+              <span>Rs {total.toLocaleString()}</span>
             </div>
 
             <Link href="/checkout">
-            <button className="w-full bg-black text-white py-3 mt-4">
-              Checkout
-            </button>
-          </Link>
-
+              <button className="w-full bg-black text-white py-3 mt-4">
+                Checkout
+              </button>
+            </Link>
           </div>
         </div>
       )}

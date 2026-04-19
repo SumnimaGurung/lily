@@ -11,9 +11,10 @@ export default function AdminOrdersPage() {
     try {
       const res = await fetch(`/api/admin/orders?search=${search}`);
       const data = await res.json();
-      setOrders(data);
+      setOrders(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error(error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -74,6 +75,7 @@ export default function AdminOrdersPage() {
           <div className="space-y-4 p-4">
             {orders.map((order) => (
               <div key={order.order_id} className="border rounded-xl p-5 space-y-4">
+                
                 <div className="grid md:grid-cols-4 gap-4">
                   <div>
                     <p className="text-sm text-gray-500">Purchase ID</p>
@@ -92,7 +94,12 @@ export default function AdminOrdersPage() {
 
                   <div>
                     <p className="text-sm text-gray-500">Total</p>
-                    <p>${order.total_amount}</p>
+
+                    {/* ✅ PRICE FIX */}
+                    <p>
+                      Rs {Number(order.total_amount || 0).toLocaleString()}
+                    </p>
+
                   </div>
                 </div>
 
@@ -155,6 +162,7 @@ export default function AdminOrdersPage() {
                     </button>
                   </div>
                 </div>
+
               </div>
             ))}
           </div>
@@ -163,5 +171,3 @@ export default function AdminOrdersPage() {
     </main>
   );
 }
-
-
