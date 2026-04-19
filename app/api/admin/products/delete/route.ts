@@ -1,19 +1,19 @@
 import { db } from "@/lib/db";
 
-export async function GET() {
+export async function DELETE(req: Request) {
   try {
-    const [rows]: any = await db.query(
-      `SELECT * FROM product
-       WHERE product_status = 'active'
-       AND (display_label = 'new' OR display_label = 'restocked')
-       ORDER BY product_id DESC`
+    const { productId } = await req.json();
+
+    await db.query(
+      "DELETE FROM product WHERE product_id = ?",
+      [productId]
     );
 
-    return Response.json(rows);
+    return Response.json({ message: "Product deleted successfully" });
   } catch (error) {
-    console.error(error);
+    console.error("DELETE PRODUCT ERROR:", error);
     return Response.json(
-      { message: "Error loading new products" },
+      { message: "Error deleting product" },
       { status: 500 }
     );
   }
