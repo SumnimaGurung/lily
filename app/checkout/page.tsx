@@ -15,6 +15,7 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -46,16 +47,72 @@ export default function CheckoutPage() {
   }, [router]);
 
   const total = cartItems.reduce((sum, item) => {
-    return sum + item.price * item.quantity;
+    return sum + Number(item.price) * Number(item.quantity);
   }, 0);
 
-  const handleOrder = async () => {
+  const validateForm = () => {
     if (!name || !email || !address || !city || !postalCode || !phone) {
       alert("Please fill all details");
-      return;
+      return false;
     }
 
+    if (cartItems.length === 0) {
+      alert("Your cart is empty");
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleOrder = async () => {
+    if (!validateForm()) return;
+
+    setSubmitting(true);
+
     try {
+      if (paymentMethod === "eSewa") {
+        const res = await fetch("/api/esewa/initiate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            address,
+            city,
+            postalCode,
+            phone,
+            total,
+            cartItems,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || "Failed to initiate eSewa payment");
+          setSubmitting(false);
+          return;
+        }
+
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = data.payment_url;
+
+        Object.entries(data.formData).forEach(([key, value]) => {
+          const input = document.createElement("input");
+          input.type = "hidden";
+          input.name = key;
+          input.value = String(value);
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+        return;
+      }
+
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: {
@@ -77,20 +134,21 @@ export default function CheckoutPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message);
+        alert(data.message || "Failed to place order");
+        setSubmitting(false);
         return;
       }
 
       alert("Order placed successfully!");
-
       localStorage.removeItem("cart");
       setCartItems([]);
       window.dispatchEvent(new Event("cartUpdated"));
-
       router.push("/account");
     } catch (error) {
       console.error(error);
       alert("Something went wrong");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -195,9 +253,14 @@ export default function CheckoutPage() {
 
           <button
             onClick={handleOrder}
-            className="w-full bg-black text-white py-3 mt-4"
+            disabled={submitting}
+            className="w-full bg-black text-white py-3 mt-4 disabled:opacity-50"
           >
-            Place Order
+            {submitting
+              ? "Processing..."
+              : paymentMethod === "eSewa"
+              ? "Pay with eSewa"
+              : "Place Order"}
           </button>
         </div>
 
@@ -209,7 +272,7 @@ export default function CheckoutPage() {
               <span>
                 {item.name} x {item.quantity}
               </span>
-              <span>${item.price * item.quantity}</span>
+              <span>Rs. {Number(item.price) * Number(item.quantity)}</span>
             </div>
           ))}
 
@@ -221,7 +284,7 @@ export default function CheckoutPage() {
 
             <div className="flex justify-between font-semibold">
               <span>Total</span>
-              <span>${total}</span>
+              <span>Rs. {total}</span>
             </div>
           </div>
         </div>
