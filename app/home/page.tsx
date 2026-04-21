@@ -35,10 +35,10 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-white text-black">
-      {/* Hero Section */}
+     
       <section className="relative h-[90vh] w-full">
         <img
-          src="/mini.jpg"
+          src="/lily.jpg"
           alt="Hero"
           className="absolute inset-0 w-full h-full object-cover"
         />
@@ -70,7 +70,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Featured Pieces */}
       <section className="px-6 md:px-10 py-20">
         <div className="flex items-center justify-between mb-10">
           <h3 className="text-3xl md:text-4xl font-serif">Featured Pieces</h3>
@@ -108,7 +107,7 @@ export default function HomePage() {
      
       <section className="relative h-[80vh] w-full">
         <img
-          src="/lily.jpg"
+          src="/mini.jpg"
           alt="Lily Studio Banner"
           className="absolute inset-0 w-full h-full object-cover"
         />
