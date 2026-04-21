@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 
+
 const products = [
   { id: 1, name: "Tailored Blazer", price: 6000, category: "Blazers", image: "/blackblazer.jpg" },
   { id: 2, name: "Top", price: 3500, category: "Tops", image: "/top.jpg" },
@@ -33,42 +34,12 @@ const products = [
 ];
 
 const occasions = [
-  {
-    key: "casual",
-    title: "Casual Hangout",
-    subtitle: "Easy everyday pieces for relaxed outings.",
-    image: "/casual.jpg",
-  },
-  {
-    key: "brunch",
-    title: "Brunch",
-    subtitle: "Soft and polished looks for daytime plans.",
-    image: "/brunch.jpg",
-  },
-  {
-    key: "night",
-    title: "Night Dinner",
-    subtitle: "Elegant pieces for refined evening styling.",
-    image: "/night.jpg",
-  },
-  {
-    key: "office",
-    title: "Office",
-    subtitle: "Clean and structured looks for workwear dressing.",
-    image: "/office.jpg",
-  },
-  {
-    key: "weekend",
-    title: "Weekend",
-    subtitle: "Comfortable essentials for slow and stylish weekends.",
-    image: "/weekend.jpg",
-  },
-  {
-    key: "date",
-    title: "Date",
-    subtitle: "Feminine and elegant styles for special moments.",
-    image: "/date.jpg",
-  },
+  { key: "casual", title: "Casual Hangout", subtitle: "Easy everyday pieces for relaxed outings." },
+  { key: "brunch", title: "Brunch", subtitle: "Soft and polished looks for daytime plans." },
+  { key: "night", title: "Night Dinner", subtitle: "Elegant pieces for refined evening styling." },
+  { key: "office", title: "Office", subtitle: "Clean and structured looks for workwear dressing." },
+  { key: "weekend", title: "Weekend", subtitle: "Comfortable essentials for slow and stylish weekends." },
+  { key: "date", title: "Date", subtitle: "Feminine and elegant styles for special moments." },
 ];
 
 export default function RecommendationPage() {
@@ -164,12 +135,12 @@ export default function RecommendationPage() {
                   className="relative h-[260px] rounded-2xl overflow-hidden group"
                 >
                   <img
-                    src={occasion.image}
-                    alt={occasion.title}
+                    src="/flowers.jpg"
+                    alt="Occasion background"
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   />
 
-                  <div className="absolute inset-0 bg-black/35 group-hover:bg-black/45 transition duration-300" />
+                  <div className="absolute inset-0 bg-white/10" />
 
                   <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
                     <h2 className="text-white text-2xl md:text-3xl font-serif mb-2">
