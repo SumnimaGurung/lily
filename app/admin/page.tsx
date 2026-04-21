@@ -16,6 +16,20 @@ export default function AdminPage() {
   const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
+    const savedUser = sessionStorage.getItem("user");
+
+    if (!savedUser) {
+      router.push("/");
+      return;
+    }
+
+    const parsedUser = JSON.parse(savedUser);
+
+    if (parsedUser.role !== "admin") {
+      router.push("/home");
+      return;
+    }
+
     const fetchDashboard = async () => {
       try {
         const res = await fetch("/api/admin/dashboard");
@@ -43,7 +57,7 @@ export default function AdminPage() {
     };
 
     fetchDashboard();
-  }, []);
+  }, [router]);
 
   const COLORS = ["#111111", "#666666", "#9ca3af", "#d1d5db"];
 

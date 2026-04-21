@@ -26,7 +26,7 @@ export default function Navbar() {
     };
 
     const updateUser = () => {
-      const savedUser = localStorage.getItem("user");
+      const savedUser = sessionStorage.getItem("user");
       if (savedUser) {
         setUser(JSON.parse(savedUser));
       } else {
@@ -39,13 +39,11 @@ export default function Navbar() {
 
     window.addEventListener("storage", updateCartCount);
     window.addEventListener("cartUpdated", updateCartCount);
-    window.addEventListener("storage", updateUser);
     window.addEventListener("userUpdated", updateUser);
 
     return () => {
       window.removeEventListener("storage", updateCartCount);
       window.removeEventListener("cartUpdated", updateCartCount);
-      window.removeEventListener("storage", updateUser);
       window.removeEventListener("userUpdated", updateUser);
     };
   }, []);
@@ -54,6 +52,14 @@ export default function Navbar() {
     if (e.key === "Enter" && searchText.trim() !== "") {
       router.push(`/shop?search=${encodeURIComponent(searchText.trim())}`);
       setMenuOpen(false);
+    }
+  };
+
+  const handleAccountClick = () => {
+    if (user) {
+      router.push("/account");
+    } else {
+      router.push("/");
     }
   };
 
@@ -95,9 +101,9 @@ export default function Navbar() {
               />
             </div>
 
-            <Link href="/account">
+            <button onClick={handleAccountClick}>
               <User size={20} />
-            </Link>
+            </button>
 
             <Link href="/wishlist">
               <Heart size={20} />
@@ -146,7 +152,9 @@ export default function Navbar() {
             </div>
 
             <div className="border-t border-gray-200 pt-6">
-              <p className="text-xs uppercase text-gray-500 mb-4">Shop Categories</p>
+              <p className="text-xs uppercase text-gray-500 mb-4">
+                Shop Categories
+              </p>
 
               <div className="flex flex-col gap-4 text-sm uppercase tracking-wider">
                 <Link href="/shop?search=tops" onClick={() => setMenuOpen(false)}>

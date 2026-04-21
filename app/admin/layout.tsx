@@ -15,7 +15,7 @@ export default function AdminLayout({
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const savedUser = sessionStorage.getItem("user");
 
     if (!savedUser) {
       router.push("/");
@@ -33,6 +33,7 @@ export default function AdminLayout({
   }, [router]);
 
   const handleLogout = () => {
+    sessionStorage.removeItem("user");
     localStorage.removeItem("user");
     window.dispatchEvent(new Event("userUpdated"));
     router.push("/");

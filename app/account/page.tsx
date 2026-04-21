@@ -33,7 +33,7 @@ export default function AccountPage() {
   });
 
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
+    const savedUser = sessionStorage.getItem("user");
 
     if (!savedUser) {
       router.push("/");
@@ -112,6 +112,7 @@ export default function AccountPage() {
   }, [router]);
 
   const handleLogout = () => {
+    sessionStorage.removeItem("user");
     localStorage.removeItem("user");
     window.dispatchEvent(new Event("userUpdated"));
     router.push("/");
@@ -170,7 +171,8 @@ export default function AccountPage() {
         phone: settingsData.phone,
       };
 
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      sessionStorage.setItem("user", JSON.stringify(updatedUser));
+      localStorage.removeItem("user");
       setUser(updatedUser);
       window.dispatchEvent(new Event("userUpdated"));
 
@@ -353,7 +355,7 @@ export default function AccountPage() {
                           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
                             <div>
                               <p className="text-sm text-neutral-500 mb-1">Total</p>
-                              <p className="font-medium">${order.total_amount}</p>
+                              <p className="font-medium">Rs. {order.total_amount}</p>
                             </div>
 
                             <div>
@@ -563,7 +565,7 @@ export default function AccountPage() {
                                 })
                               }
                               className="w-full border border-neutral-200 bg-white px-4 py-3 outline-none"
-                            />
+                          />
                           </div>
                         </div>
 

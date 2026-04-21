@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AuthPage() {
@@ -15,14 +15,26 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [message, setMessage] = useState("");
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage("");
 
     if (!isLogin && password !== confirmPassword) {
-      setMessage("Passwords do not match");
+      setToast({ message: "Passwords do not match", type: "error" });
       return;
     }
 
@@ -49,24 +61,33 @@ export default function AuthPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage(data.message || "Something went wrong");
+        setToast({
+          message: data.message || "Something went wrong",
+          type: "error",
+        });
         return;
       }
 
       if (isLogin) {
-        localStorage.setItem("user", JSON.stringify(data.user));
+        sessionStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.removeItem("user");
         window.dispatchEvent(new Event("userUpdated"));
-        setMessage("Login successful");
-      
+
+        setToast({ message: "Login successful", type: "success" });
+
         setTimeout(() => {
           if (data.user.role === "admin") {
             router.push("/admin");
           } else {
             router.push("/home");
           }
-        }, 1000);
+        }, 1500);
       } else {
-        setMessage("Registration successful. Please login.");
+        setToast({
+          message: "Registration successful. Please login.",
+          type: "success",
+        });
+
         setIsLogin(true);
         setFirstName("");
         setLastName("");
@@ -77,7 +98,7 @@ export default function AuthPage() {
       }
     } catch (error) {
       console.error(error);
-      setMessage("Server error");
+      setToast({ message: "Server error", type: "error" });
     }
   };
 
@@ -156,8 +177,6 @@ export default function AuthPage() {
             />
           )}
 
-          {message && <p className="text-sm text-red-500">{message}</p>}
-
           <button
             type="submit"
             className="w-full bg-black text-white py-3 text-sm tracking-[0.2em]"
@@ -174,7 +193,7 @@ export default function AuthPage() {
                   className="underline cursor-pointer"
                   onClick={() => {
                     setIsLogin(false);
-                    setMessage("");
+                    setToast(null);
                   }}
                 >
                   Register
@@ -190,7 +209,7 @@ export default function AuthPage() {
                 className="underline cursor-pointer"
                 onClick={() => {
                   setIsLogin(true);
-                  setMessage("");
+                  setToast(null);
                 }}
               >
                 Login
@@ -199,6 +218,18 @@ export default function AuthPage() {
           )}
         </div>
       </div>
+
+      {toast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50">
+          <div
+            className={`px-6 py-3 rounded shadow-lg text-white text-sm tracking-wide ${
+              toast.type === "success" ? "bg-green-600" : "bg-red-500"
+            }`}
+          >
+            {toast.message}
+          </div>
+        </div>
+      )}
     </main>
   );
 }

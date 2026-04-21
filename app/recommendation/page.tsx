@@ -1,8 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-
 
 const products = [
   { id: 1, name: "Tailored Blazer", price: 6000, category: "Blazers", image: "/blackblazer.jpg" },
@@ -30,6 +30,45 @@ const products = [
   { id: 23, name: "Ballet", price: 2600, category: "Tops", image: "/ballet.jpg" },
   { id: 24, name: "Flats", price: 2700, category: "Tops", image: "/flat.jpg" },
   { id: 25, name: "Sandal", price: 2400, category: "Tops", image: "/sandal.jpg" },
+];
+
+const occasions = [
+  {
+    key: "casual",
+    title: "Casual Hangout",
+    subtitle: "Easy everyday pieces for relaxed outings.",
+    image: "/casual.jpg",
+  },
+  {
+    key: "brunch",
+    title: "Brunch",
+    subtitle: "Soft and polished looks for daytime plans.",
+    image: "/brunch.jpg",
+  },
+  {
+    key: "night",
+    title: "Night Dinner",
+    subtitle: "Elegant pieces for refined evening styling.",
+    image: "/night.jpg",
+  },
+  {
+    key: "office",
+    title: "Office",
+    subtitle: "Clean and structured looks for workwear dressing.",
+    image: "/office.jpg",
+  },
+  {
+    key: "weekend",
+    title: "Weekend",
+    subtitle: "Comfortable essentials for slow and stylish weekends.",
+    image: "/weekend.jpg",
+  },
+  {
+    key: "date",
+    title: "Date",
+    subtitle: "Feminine and elegant styles for special moments.",
+    image: "/date.jpg",
+  },
 ];
 
 export default function RecommendationPage() {
@@ -112,9 +151,38 @@ export default function RecommendationPage() {
 
       <div className="px-10 md:px-20 lg:px-40 py-10">
         {type === "" ? (
-          <p className="text-center text-gray-500">
-            Please select an occasion first.
-          </p>
+          <>
+            <p className="text-center text-gray-500 mb-10">
+              Select an occasion to get style recommendations.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {occasions.map((occasion) => (
+                <Link
+                  key={occasion.key}
+                  href={`/recommendation?type=${occasion.key}`}
+                  className="relative h-[260px] rounded-2xl overflow-hidden group"
+                >
+                  <img
+                    src={occasion.image}
+                    alt={occasion.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                  />
+
+                  <div className="absolute inset-0 bg-black/35 group-hover:bg-black/45 transition duration-300" />
+
+                  <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
+                    <h2 className="text-white text-2xl md:text-3xl font-serif mb-2">
+                      {occasion.title}
+                    </h2>
+                    <p className="text-white/90 text-sm">
+                      {occasion.subtitle}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </>
         ) : filteredProducts.length === 0 ? (
           <p className="text-center text-gray-500">
             No recommendations available.
@@ -138,7 +206,7 @@ export default function RecommendationPage() {
 
                 <button
                   onClick={() => handleAddToCart(product)}
-                  className="w-full border border-black py-2 text-sm uppercase hover:bg-black hover:text-white transition"
+                  className="w-full bg-black text-white py-2 text-sm uppercase hover:opacity-90 transition"
                 >
                   Add to Cart
                 </button>
